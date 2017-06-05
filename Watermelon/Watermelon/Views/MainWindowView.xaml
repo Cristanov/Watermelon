@@ -1,0 +1,82 @@
+﻿<Window x:Class="Watermelon.Views.MainWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:cm="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro.Platform"
+        xmlns:prop="clr-namespace:Watermelon.Properties"
+        Height="600" Width="910"
+        Icon="../Images/watermelon_piece.ico"
+        WindowState="Maximized"
+        cm:Message.Attach="[Event Loaded] = [Action LoadedMainWindow]; [Event Closing] = [Action Closing]"        
+        >
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/MainWindowResource.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top" Height="30" Background="#59ABE3" Foreground="Black">
+                <MenuItem Header="{x:Static prop:Resources.fileLab}" Height="30">
+                    <MenuItem Name="New" Header="{x:Static prop:Resources.newLab}"/>
+                    <MenuItem Name="Open" Header="{x:Static prop:Resources.openProjectLab}"/>
+                    <MenuItem Name="Save" Header="{x:Static prop:Resources.saveProjectLab}"/>
+                    <MenuItem Name="SaveAs" Header="{x:Static prop:Resources.saveAsLab}"/>
+                </MenuItem>
+
+                <MenuItem Header="{x:Static prop:Resources.settings}">
+                    <MenuItem Header="{x:Static prop:Resources.language}">
+                        <RadioButton Content="Polski" Name="PolishLanguage"
+                                     cm:Message.Attach="[Event Checked] = [Action PolishLanguageChecked]"></RadioButton>
+                        <RadioButton Content="English" Name="EnglishLanguage"
+                                     cm:Message.Attach="[Event Checked] = [Action EnglishLanguageChecked]"></RadioButton>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="{x:Static prop:Resources.helpLab}">
+                    <MenuItem Name="Tutorial" Header="{x:Static prop:Resources.tutorialLab}" />
+                    <MenuItem Name="AboutClick" Header="{x:Static prop:Resources.aboutLab}"/>
+                </MenuItem>
+            </Menu>
+            <StatusBar DockPanel.Dock="Bottom" Height="30" Background="#59ABE3">
+                <Label Name="StatusLabel">status</Label>
+            </StatusBar>
+
+            <DockPanel DockPanel.Dock="Left" Width="200" Background="#59ABE3">
+
+                <StackPanel DockPanel.Dock="Top" Style="{StaticResource leftElement}" cm:Message.Attach="[Event MouseDown] = [Action spImagesMouseDown]"
+                            ToolTip="{x:Static prop:Resources.imagesPanelTip}">
+                    <Image Source="../Images/box5.png" Style="{StaticResource leftElementImage}" />
+                    <Label FontSize="18" VerticalAlignment="Center" Content="{x:Static prop:Resources.images}"></Label>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Top" Style="{StaticResource leftElement}" cm:Message.Attach="[Event MouseDown] = [Action spWatermarkMouseDown]"
+                            ToolTip="{x:Static prop:Resources.watermarkPanelTip}">
+                    <Image Source="../Images/abc1.png" Style="{StaticResource leftElementImage}" />
+                    <Label FontSize="18" VerticalAlignment="Center" Content="{x:Static prop:Resources.watermark}"></Label>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Top" Style="{StaticResource leftElement}" cm:Message.Attach="[Event MouseDown] = [Action spSettingsMouseDown]"
+                            ToolTip="{x:Static prop:Resources.savePanelTip}">
+                    <Image Source="../Images/floppy.png" Style="{StaticResource leftElementImage}" />
+                    <Label FontSize="18" VerticalAlignment="Center" Content="{x:Static prop:Resources.save}"></Label>
+                </StackPanel>
+
+                <StackPanel Style="{StaticResource leftElement}" Visibility="{Binding IsActual, Converter={StaticResource BoolToVisibilityConverter}}"
+                            cm:Message.Attach="[Event MouseDown] = [Action UpdateButton]"
+                            HorizontalAlignment="Center" Orientation="Vertical" Height="120" Background="#e74c3c" Width="170">
+                    <TextBlock Name="UpdateMessage" Margin="5 5 5 5" TextWrapping="WrapWithOverflow"></TextBlock>
+                    <Image Source="../Images/update.png" Width="60" Height="60" />
+                </StackPanel>
+            </DockPanel>
+
+            <DockPanel>
+
+                <ContentControl Name="ActiveItem" Background="#A6A7FF" />
+            </DockPanel>
+
+        </DockPanel>
+    </Grid>
+
+</Window>

@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="Watermelon.Views.ImagesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cm="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro.Platform"
+             xmlns:con="clr-namespace:Watermelon.Converters"
+             xmlns:prop="clr-namespace:Watermelon.Properties"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="600">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/MainWindowResource.xaml" />
+                <ResourceDictionary Source="Resources/ImageViewResource.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Style="{StaticResource contentBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="55"/>
+            <RowDefinition />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Background="#3498DB" Style="{StaticResource handCursor}" ToolTip="{x:Static prop:Resources.imagesAddFilesTip}"
+                    cm:Message.Attach="[Event MouseDown] = [Action loadImagesMouseDown]" Grid.Row="0">
+            <Image Source="../Images/upload2.png" Margin="20 0 0 0" Height="45" Width="45" />
+            <Label FontSize="20" VerticalAlignment="Center" Content="{x:Static prop:Resources.imagesAddFiles}"></Label>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ListBox Name="listBoxImages" ItemsSource="{Binding Images}" IsSynchronizedWithCurrentItem="True" 
+                     Style="{StaticResource ImagesListBoxStyle}" SelectionMode="Single"
+                     SelectedIndex="{Binding SelectedImage}"
+                     >
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="{x:Static prop:Resources.preview}" cm:Message.Attach="[Event Click] = [Action PreviewButton]"></MenuItem>
+                        <MenuItem Header="{x:Static prop:Resources.delete}" cm:Message.Attach="[Event Click] = [Action DeleteButton]" />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel>
+                        </WrapPanel>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ListBox>
+
+        </ScrollViewer>
+        <ScrollBar Name="ZoomSlider" Value="140" Minimum="50" Maximum="570" SmallChange="5" Orientation="Horizontal"
+                           Height="20" Background="Transparent" ToolTip="{x:Static prop:Resources.zoomTip}"
+                   Grid.Row="2"></ScrollBar>
+        <StackPanel Orientation="Vertical" Background="#3498DB" Grid.Row="3" HorizontalAlignment="Stretch">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0">
+
+                <Button Name="PreviewButton" Style="{StaticResource button}"  ToolTip="{x:Static prop:Resources.previewTip}"
+                        IsEnabled="{Binding ElementName=listBoxImages, Path=SelectedIndex, Converter={StaticResource SelectedToBoolConverter}}"
+                        Opacity="{Binding ElementName=PreviewButton, Path=IsEnabled, Converter={StaticResource BoolToOpacityConverter}}" >
+                    <Image Source="../Images/preview.png" />
+                </Button>
+                <Button Name="DeleteButton" Style="{StaticResource button}" ToolTip="{x:Static prop:Resources.deleteTip}"
+                        IsEnabled="{Binding ElementName=listBoxImages, Path=SelectedIndex, Converter={StaticResource SelectedToBoolConverter}}"
+                        Opacity="{Binding ElementName=DeleteButton, Path=IsEnabled, Converter={StaticResource BoolToOpacityConverter}}">
+                    <Image Source="../Images/close.png" />
+                </Button>
+                <Button Name="ClearButton" Style="{StaticResource button}" Width="40" ToolTip="{x:Static prop:Resources.clearTip}"
+                        Content="{x:Static prop:Resources.clearButton}"/>                    
+                
+            </StackPanel>
+
+        </StackPanel>
+    </Grid>
+</UserControl>

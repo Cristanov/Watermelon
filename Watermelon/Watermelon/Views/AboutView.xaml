@@ -1,0 +1,40 @@
+﻿<Window x:Class="Watermelon.Views.AboutView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:prop="clr-namespace:Watermelon.Properties"
+        xmlns:cm="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro.Platform"
+             mc:Ignorable="d" 
+             Height="220"
+             Width="300"
+        WindowStartupLocation="CenterScreen"
+             Background="#2b5797"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+
+        <Style TargetType="StackPanel">
+            <Setter Property="Margin" Value="5 10 0 0"/>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel HorizontalAlignment="Center" LastChildFill="False">
+        <StackPanel DockPanel.Dock="Top">
+            <Image Source="../Images/watermelon_piece.png" Height="50" Width="50"/>
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <TextBlock FontSize="16" Text="{x:Static prop:Resources.watermelonVersion}"/>
+            <TextBlock Margin="5 0 0 0" Name="AppVersion"/>
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="{x:Static prop:Resources.authorName}"/>
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <TextBlock Text="{x:Static prop:Resources.siteLab}"/>
+            <TextBlock Name="Url" Margin="5 0 0 0" TextDecorations="Underline" cm:Message.Attach="[Event MouseDown]=[Action ClickLink]" Cursor="Hand"/>
+        </StackPanel>
+    </DockPanel>
+</Window>

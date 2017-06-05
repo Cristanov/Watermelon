@@ -1,0 +1,283 @@
+﻿<UserControl x:Class="Watermelon.Views.WatermarkView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:con="clr-namespace:Watermelon.Converters"
+             xmlns:cm="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro.Platform"
+             xmlns:controls="clr-namespace:Watermelon.Controls"
+             xmlns:prop="clr-namespace:Watermelon.Properties"
+             xmlns:local="clr-namespace:Watermelon.Models"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="650">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/MainWindowResource.xaml" />
+                <ResourceDictionary Source="Resources/ImageViewResource.xaml"/>
+                <ResourceDictionary Source="Resources/WatermarkResources.xaml"/>
+                <ResourceDictionary Source="Resources/ComboBoxResource.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="myLBStyle" TargetType="{x:Type ListBoxItem}">
+                <Style.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
+                </Style.Resources>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Style="{StaticResource contentBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="55"/>
+            <RowDefinition />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <Border BorderBrush="Black">
+            <StackPanel Orientation="Horizontal" Height="55" Grid.Row="0" Background="#3498DB" Name="sp">
+                <RibbonMenuButton Name="ribbBut" SmallImageSource="../Images/add117.png" LargeImageSource="../Images/add117.png" BorderThickness="0"
+                                  Label="{x:Static prop:Resources.newWatermark}"
+                                  Style="{StaticResource handCursor}">
+                    <RibbonMenuItem Header="{x:Static prop:Resources.textTypeWatermark}" ToolTip="{x:Static prop:Resources.addNewTextWatermarkTip}"
+                                    cm:Message.Attach="[Event Click] = [Action AddNewTextWatermark]" ImageSource="../Images/letterst.png">
+                    </RibbonMenuItem>
+                    <RibbonMenuItem Header="{x:Static prop:Resources.graphicTypeWatermark}" ToolTip="{x:Static prop:Resources.addNewGraphicWatermarkTip}"
+                                    cm:Message.Attach="[Event Click] = [Action AddNewGraphicWatermark]" ImageSource="../Images/landscape.png">
+                    </RibbonMenuItem>
+                </RibbonMenuButton>
+                <RibbonMenuButton Label="{x:Static prop:Resources.saveLab}" LargeImageSource="../Images/floppy.png" ToolTip="{x:Static prop:Resources.saveWatermarkTip}">
+                    <RibbonMenuItem Header="{x:Static prop:Resources.onlyMarked}" ToolTip="{x:Static prop:Resources.saveOnlyMarkedTip}"
+                                   cm:Message.Attach="[Event Click] = [Action SaveSelectedWatermark]" />
+                    <RibbonMenuItem Header="{x:Static prop:Resources.allWatermarks}" ToolTip="{x:Static prop:Resources.saveAllWatermarksTip}"
+                                    cm:Message.Attach="[Event Click] = [Action SaveAllWatermarks]"/>
+                </RibbonMenuButton>
+
+                <Button Name="OpenWatermarks" Style="{StaticResource watermarkButton}" ToolTip="{x:Static prop:Resources.openTip}">
+                    <StackPanel Orientation="Vertical" Width="50" Height="55">
+                        <Image Width="30" Height="30" Margin="0" Source="../Images/open.png"/>
+                        <Label Content="{x:Static prop:Resources.openLab}" Margin="0 -3 0 0" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="310" />
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <DockPanel Grid.Column="0" Width="310" HorizontalAlignment="Left" VerticalAlignment="Top" >
+
+                <ListBox Name="Watermarks" Height="150" DockPanel.Dock="Top"  Background="Transparent"
+                         SelectedItem="{Binding SelectedWatermark}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="Padding" Value="0,3,0,0"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True" >
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </Trigger>
+                            </Style.Triggers>
+
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+
+                            <DockPanel Width="280">
+                                <Image Style="{StaticResource IconImage}" />
+                                <Button Width="20" DockPanel.Dock="Right" Background="Transparent" BorderThickness="0" ToolTip="{x:Static prop:Resources.deleteTip}"
+                                        Style="{StaticResource button}" 
+                                        cm:Message.Attach="[Event Click] = [Action DeleteWatermark($this)]">
+                                    <Image Source="../Images/cross66.png" Height="20" Width="20"/>
+                                </Button>
+                                <Button Width="20" DockPanel.Dock="Right" Background="Transparent" BorderThickness="0" ToolTip="{x:Static prop:Resources.onOff}"
+                                        Style="{StaticResource button}" 
+                                        cm:Message.Attach="[Event Click] = [Action OnOffWatermark($this)]">
+                                    <Image Style="{StaticResource VisibleIcon}" />
+                                </Button>
+                                <Label Content="{Binding Caption}"></Label>
+                            </DockPanel>
+
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <ScrollViewer Background="Transparent" VerticalScrollBarVisibility="Auto">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Name="TextWatermarkOption" Margin="0 20 0 0"
+                            Visibility="{Binding SelectedWatermark, Converter={StaticResource TextWatermarkToVisibilityConverter}}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Content="{x:Static prop:Resources.captionLabel}"></Label>
+                                <TextBox Grid.Row="0" Grid.Column="2" Name="SelectedWatermark_Caption" Background="Transparent" FontSize="16"
+                                    ToolTip="{x:Static prop:Resources.captionTip}"
+                                    cm:Message.Attach="[Event TextChanged] = [Action RefreshPreview]"></TextBox>
+
+                                <Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Content="{x:Static prop:Resources.fontLab}"></Label>
+                                <ComboBox xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+                          cm:Message.Attach="[Event SelectionChanged] = [Action RefreshPreview]"
+                    Grid.Row="1" Grid.Column="2" ToolTip="{x:Static prop:Resources.fontTip}"
+                  Name="TWatermark_Font"
+                  Margin="5"
+                  VerticalAlignment="Center"
+                  ItemTemplate="{DynamicResource FontTemplate}"
+                              SelectedValue="{Binding SelectedWatermark.Font}">
+                                    <ComboBox.Resources>
+
+                                        <CollectionViewSource x:Key="myFonts" Source="{Binding Source={x:Static Fonts.SystemFontFamilies}}">
+                                            <CollectionViewSource.SortDescriptions>
+                                                <ComponentModel:SortDescription PropertyName="Source" />
+                                            </CollectionViewSource.SortDescriptions>
+                                        </CollectionViewSource>
+
+                                        <Style x:Key="FontStyle">
+                                            <Setter Property="Control.FontFamily" Value="{Binding Source}" />
+                                            <Setter Property="Control.FontSize" Value="16" />
+                                        </Style>
+
+                                        <DataTemplate x:Key="FontTemplate">
+                                            <StackPanel VirtualizingStackPanel.IsVirtualizing="True">
+                                                <TextBlock Style="{StaticResource FontStyle}"
+                                   Text="{Binding Source}"
+                                   ToolTip="{Binding Source}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+
+                                    </ComboBox.Resources>
+
+                                    <ComboBox.ItemsSource>
+                                        <Binding Source="{StaticResource myFonts}" />
+                                    </ComboBox.ItemsSource>
+                                </ComboBox>
+
+                                <Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Content="{x:Static prop:Resources.colorLab}"></Label>
+                                <xctk:ColorPicker Grid.Row="2" Grid.Column="2" Name="TWatermark_Color" Background="Transparent"
+                                    SelectedColor="{Binding SelectedWatermark.Color}" ToolTip="{x:Static prop:Resources.colorTip}"
+                                    cm:Message.Attach="[Event SelectedColorChanged] = [Action RefreshPreview]"/>
+
+                                <Label Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" Content="{x:Static prop:Resources.sizeLab}"></Label>
+                                <StackPanel Grid.Row="3" Grid.Column="2"  Orientation="Horizontal" ToolTip="{x:Static prop:Resources.sizeTip}">
+                                    <Slider Name="sliderFontSize" Maximum="500" Minimum="1" Width="150" Margin="0 5 0 0" 
+                                        Value="{Binding SelectedWatermark.FontSize}" 
+                                        cm:Message.Attach="[Event ValueChanged] = [Action RefreshPreview]" ></Slider>
+                                    <TextBox Name="tbSize" Width="40" Text="{Binding ElementName=sliderFontSize, Path=Value}"
+                                        Background="Transparent" cm:Message.Attach="[Event LostFocus] = [Action RefreshPreview]"></TextBox>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Name="GraphicWatermarkOption"
+                            Visibility="{Binding SelectedWatermark, Converter={StaticResource GraphicWatermarkToVisibilityConverter}}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Label Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right" Content="{x:Static prop:Resources.sourceLab}"></Label>
+                                <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right">
+                                    <Label Name="path" Content="{Binding SelectedWatermark.ImagePath, Mode=TwoWay}"
+                                           ToolTip="{Binding ElementName=path, Path=Content}"></Label>
+                                    <Button Name="OpenFile" Style="{StaticResource button}" Width="77" ToolTip="{x:Static prop:Resources.browseTip}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{x:Static prop:Resources.browseLab}"/>
+                                            <Image Width="20" Height="20" Source="../Images/tab.png" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+
+                                <Label Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Content="{x:Static prop:Resources.heightLab}"/>
+                                <TextBox Name="SelectedWatermark_Height" Grid.Column="2" Grid.Row="1" ToolTip="{x:Static prop:Resources.heightTip}"
+                                         cm:Message.Attach="[Event TextChanged] = [Action RefreshPreview]"/>
+
+                                <Label Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" Content="{x:Static prop:Resources.widthLab}"/>
+                                <TextBox Name="SelectedWatermark_Width" Grid.Column="2" Grid.Row="2" ToolTip="{x:Static prop:Resources.widthTip}"
+                                         cm:Message.Attach="[Event TextChanged] = [Action RefreshPreview]"/>
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Visibility="{Binding SelectedWatermark, Converter={StaticResource WatermarkToVisibilityConverter}}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Content="{x:Static prop:Resources.opacityLab}"/>
+                                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" ToolTip="{x:Static prop:Resources.opacityTip}">
+                                    <Slider Name="OpacitySlider" Maximum="100" Minimum="0" Width="145" Margin="0 5 0 0"
+                           Value="{Binding SelectedWatermark.Opacity, Converter={StaticResource OpacityToPercentConverter}}" 
+                            cm:Message.Attach="[Event ValueChanged] = [Action RefreshPreview]"></Slider>
+                                    <TextBlock Text="{Binding ElementName=OpacitySlider, Path=Value, StringFormat=#}"  Width="20" Margin="0 5 0 0" />
+                                    <Label>%</Label>
+                                </StackPanel>
+
+                                <Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                       Content="{x:Static prop:Resources.positionLab}"/>
+                                <Grid Grid.Row="1" Grid.Column="2" Height="100" Width="100" HorizontalAlignment="Left">
+                                    <controls:Navigator ToolTip="{x:Static prop:Resources.positionTip}"></controls:Navigator>
+                                </Grid>
+                            </Grid>
+                        </StackPanel>
+                    </DockPanel>
+                </ScrollViewer>
+            </DockPanel>
+
+            <DockPanel  Grid.Column="1">
+                <Button Name="PreviousExampleButton" Style="{StaticResource button}" Grid.Column="0" DockPanel.Dock="Left" Width="30"
+                        IsEnabled="{Binding ImagesCount, Converter={StaticResource CountToBoolConverter}}" 
+                        ToolTip="{x:Static prop:Resources.previousImageTip}"
+                        Opacity="{Binding ElementName=PreviousExampleButton, Path=IsEnabled, Converter={StaticResource BoolToOpacityConverter}}">
+                    <Image Source="../Images/back27.png" />
+                </Button>
+                <Button Name="NextExampleButton" Style="{StaticResource button}" Grid.Column="2" DockPanel.Dock="Right" Width="30"
+                        IsEnabled="{Binding ImagesCount, Converter={StaticResource CountToBoolConverter}}"
+                        ToolTip="{x:Static prop:Resources.nextImageTip}"
+                        Opacity="{Binding ElementName=NextExampleButton, Path=IsEnabled, Converter={StaticResource BoolToOpacityConverter}}">
+                    <Image Source="../Images/forward.png" />
+                </Button>
+
+                <Grid Grid.Column="1">
+                    <Canvas Name="canvas">
+                        <Canvas.Background>
+                            <ImageBrush ImageSource="{Binding ExampleImage.Source}" Stretch="Uniform"/>
+                        </Canvas.Background>
+                    </Canvas>
+                </Grid>
+            </DockPanel>
+
+        </Grid>
+
+        <StackPanel Grid.Row="2" Style="{StaticResource footerStackPanel}" Background="#3498DB">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0">
+                <!--<Button Name="LeftButton" Style="{StaticResource button}" ToolTip="Idź do zakładki &quot;Obrazy&quot;">
+                    <Image Source="../Images/back27.png" />
+                </Button>
+                <Button Name="RightButton" Style="{StaticResource button}" ToolTip="Idź do zakładki &quot;Ustawienia&quot;">
+                    <Image Source="../Images/forward.png" />
+                </Button>-->
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>
+   
